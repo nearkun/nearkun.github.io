@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Welcome | Alexander Timoshilov]]></title>
+  <link href="http://nearkun.github.io/blog/categories/welcome/atom.xml" rel="self"/>
+  <link href="http://nearkun.github.io/"/>
+  <updated>2014-07-30T18:20:15+03:00</updated>
+  <id>http://nearkun.github.io/</id>
+  <author>
+    <name><![CDATA[Near]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Начало]]></title>
+    <link href="http://nearkun.github.io/blog/2014/07/30/asd/"/>
+    <updated>2014-07-30T18:16:13+03:00</updated>
+    <id>http://nearkun.github.io/blog/2014/07/30/asd</id>
+    <content type="html"><![CDATA[<p>Мой первый пост в этом блоге.</p>
+]]></content>
+  </entry>
+  
+</feed>
