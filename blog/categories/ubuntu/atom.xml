@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ubuntu | Alexander Timoshilov]]></title>
   <link href="http://nearkun.github.io/blog/categories/ubuntu/atom.xml" rel="self"/>
   <link href="http://nearkun.github.io/"/>
-  <updated>2014-08-12T03:01:38+03:00</updated>
+  <updated>2014-08-12T03:07:02+03:00</updated>
   <id>http://nearkun.github.io/</id>
   <author>
     <name><![CDATA[Near]]></name>
@@ -18,9 +18,11 @@
     <link href="http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/"/>
     <updated>2014-08-12T01:58:29+03:00</updated>
     <id>http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu</id>
-    <content type="html"><![CDATA[<p>Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту.
+    <content type="html"><![CDATA[<p>Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту.</p>
+
 <!-- more -->
-Процесс установки займет какое-то время, поэтому присаживайтесь поудобнее.</p>
+
+<p>Присаживайтесь поудобнее, процесс установки займет какое-то время.</p>
 
 <h2 id="ruby">1) Установка Ruby</h2>
 
