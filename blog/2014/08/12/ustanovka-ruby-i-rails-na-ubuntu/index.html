@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Alexander Timoshilov</title>
+  <title>Установка Ruby и Rails на Ubuntu - Alexander Timoshilov</title>
   <meta name="author" content="Near">
 
   
-  <meta name="description" content="Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту.
-">
+  <meta name="description" content="Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту. Процесс установки займет какое-то &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://nearkun.github.io">
+  <link rel="canonical" href="http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Alexander Timoshilov" type="application/atom+xml">
@@ -64,15 +63,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/">Установка Ruby и Rails на Ubuntu</a></h1>
+      <h1 class="entry-title">Установка Ruby и Rails на Ubuntu</h1>
     
     
       <p class="meta">
@@ -90,32 +86,132 @@
 
 <time datetime="2014-08-12T01:58:29+03:00" pubdate data-updated="true">Aug 12<sup>th</sup>, 2014</time>
         
-           | <a href="/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/#disqus_thread"
-             data-disqus-identifier="http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/">Comments</a>
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://nearkun.github.io">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту.
+<div class="entry-content"><p>Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту.
+<!-- more -->
+Процесс установки займет какое-то время, поэтому присаживайтесь поудобнее.</p>
+
+<h2 id="ruby">1) Установка Ruby</h2>
+
+<pre><code>sudo apt-get update
+sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev
+libreadline-dev
+ libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev
+python-software-properties
+
+cd
+git clone git://github.com/sstephenson/rbenv.git .rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' &gt;&gt; ~/.bashrc
+echo 'eval "$(rbenv init -)"' &gt;&gt; ~/.bashrc
+exec $SHELL
+
+git clone git://github.com/sstephenson/ruby-build.git
+~/.rbenv/plugins/ruby-build
+echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' &gt;&gt; ~/.bashrc
+exec $SHELL
+
+rbenv install 2.1.2
+rbenv global 2.1.2
+ruby -v
+
+echo "gem: --no-ri --no-rdoc" &gt; ~/.gemrc
+</code></pre>
+
+<h2 id="rails">2) Установка Rails</h2>
+
+<pre><code>sudo apt-get install nodejs
+
+gem install rails
+rbenv rehash
+rails -v
+gem install bundler
+</code></pre>
+
+<h2 id="rails-">3) Запуск Rails приложение</h2>
+<p>Теперь, когда ruby и rails установлены, мы можем проверить их работоспособность, создав и запустив приложение.</p>
+
+<pre><code>rails new_app
+cd new_app
+rails server
+</code></pre>
+
+<h2 id="postgres-">4) Установка Postgres (Опционально)</h2>
+
+<pre><code>sudo apt-get install postgresql libpq-dev
+sudo su - postgres
+createuser [me]
+createdb -O [me] [название_дб]_development
+createdb -O [me] [название_дб]_test
+exit
+</code></pre>
+
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
   
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/">Read on &rarr;</a>
-    </footer>
+
+<span class="byline author vcard">Posted by <span class="fn">Near</span></span>
+
+      
+
+
+
+
+
+
+
+
   
 
 
-    </article>
+<time datetime="2014-08-12T01:58:29+03:00" pubdate data-updated="true">Aug 12<sup>th</sup>, 2014</time>
+      
+
+<span class="categories">
   
-  <div class="pagination">
+    <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/ubuntu/'>ubuntu</a>, <a class='category' href='/blog/categories/proghrammirovaniie/'>программирование</a>
+  
+</span>
+
+
+    </p>
     
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/" data-via="hotsaucew" data-counturl="http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
 </div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -132,7 +228,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/nearkun">@nearkun</a> on GitHub
@@ -165,6 +261,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -179,7 +276,10 @@
       var disqus_shortname = 'nearkun';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/';
+        var disqus_url = 'http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

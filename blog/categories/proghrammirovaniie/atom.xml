@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Alexander Timoshilov]]></title>
-  <link href="http://nearkun.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: программирование | Alexander Timoshilov]]></title>
+  <link href="http://nearkun.github.io/blog/categories/proghrammirovaniie/atom.xml" rel="self"/>
   <link href="http://nearkun.github.io/"/>
   <updated>2014-08-12T03:01:38+03:00</updated>
   <id>http://nearkun.github.io/</id>
