@@ -4,7 +4,7 @@
   <title><![CDATA[Category: программирование | Alexander Timoshilov]]></title>
   <link href="http://nearkun.github.io/blog/categories/proghrammirovaniie/atom.xml" rel="self"/>
   <link href="http://nearkun.github.io/"/>
-  <updated>2014-08-14T23:09:04+03:00</updated>
+  <updated>2014-08-14T23:25:04+03:00</updated>
   <id>http://nearkun.github.io/</id>
   <author>
     <name><![CDATA[Near]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Аутентификация через Twitter, Facebook, ВКонтакте, исользуя Devise и OmniAuth в Rails 4]]></title>
+    <title type="html"><![CDATA[Аутентификация через Twitter, Facebook, ВКонтакте, используя Devise и OmniAuth в Rails 4]]></title>
     <link href="http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/"/>
     <updated>2014-08-14T17:43:42+03:00</updated>
     <id>http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte</id>
@@ -111,7 +111,7 @@ rails g model identity <span class="key">user</span>:references <span class="key
 <h3 id="appcontrollersomniauthcallbackscontrollerrb">app/controllers/omniauth_callbacks_controller.rb</h3>
 <p>Стоит отметить, что единственный безопасный критерий соответствия пользователя с OAuth провайдером - это подтвержденный email адрес, но это приведет к созданию нескольких аккаунтов, если пользователь имеет разные email адреса для разных OAuth провайдеров. К примеру, пользователь зарегистрировался через facebook, затем позже попытался залогиниться через вконтакте, с которым связан другой email адрес, в таком случае система создаст новый аккаунт, потому что не найдет совпадений с уже существующим пользователем.</p>
 
-<p>Поэтому, что бы связать аккаунт с несколькими OAuth провайдерами, <code class="language-ruby"><span class="CodeRay">current_user</span></code> сессия должна уже быть установлена при возврате OAuth коллбэка, и передана через <code class="language-ruby"><span class="CodeRay"><span class="constant">User</span>.find_for_oauth</span></code>. Это может прозвучать сложно, однако что бы прикрепить еще один провайдер, скажем фейсбук, это to <code class="language-ruby"><span class="CodeRay">redirect_to user_omniauth_authorize_path(<span class="symbol">:facebook</span>)</span></code>, когда пользователь уже залогинен. </p>
+<p>Поэтому, что бы связать аккаунт с несколькими OAuth провайдерами, <code class="language-ruby"><span class="CodeRay">current_user</span></code> сессия должна уже быть установлена при возврате OAuth коллбэка, и передана через <code class="language-ruby"><span class="CodeRay"><span class="constant">User</span>.find_for_oauth</span></code>. Это может прозвучать сложно, однако что бы прикрепить еще один провайдер, скажем фейсбук, это <code class="language-ruby"><span class="CodeRay">redirect_to user_omniauth_authorize_path(<span class="symbol">:facebook</span>)</span></code>, когда пользователь уже залогинен. </p>
 
 <div><div class="CodeRay">
   <div class="code"><pre><span class="keyword">class</span> <span class="class">OmniauthCallbacksController</span> &lt; <span class="constant">Devise</span>::<span class="constant">OmniauthCallbacksController</span>
