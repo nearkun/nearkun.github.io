@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Alexander Timoshilov]]></title>
   <link href="http://nearkun.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://nearkun.github.io/"/>
-  <updated>2014-08-12T03:07:02+03:00</updated>
+  <updated>2014-08-14T23:09:04+03:00</updated>
   <id>http://nearkun.github.io/</id>
   <author>
     <name><![CDATA[Near]]></name>
@@ -12,6 +12,349 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Аутентификация через Twitter, Facebook, ВКонтакте, исользуя Devise и OmniAuth в Rails 4]]></title>
+    <link href="http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/"/>
+    <updated>2014-08-14T17:43:42+03:00</updated>
+    <id>http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte</id>
+    <content type="html"><![CDATA[<p>Существует довольно много OAuth решений, но я хочу поделиться тем, что использую лично, так как оно позволяет грамотно связать несколько провайдеров(twitter, fb и тд) с одним пользователем. <!-- more --> Если вы пользуетесь готовыми решениями с интернета, вы обнаружите, что каждый раз, когда пользователь логинится с другого OAuth провайдера, создается новый аккаунт, что приводит в замешательство.
+Так же некоторые провайдеры не делятся email адресом пользователя, поэтому нам придется добавить дополнительный шаг в регистрацию, подробнее об этом <a href="#section-2">здесь</a>.</p>
+
+<h2 id="section">Начальная реализация</h2>
+
+<h3 id="gemfile">Gemfile</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre>gem <span class="string"><span class="delimiter">'</span><span class="content">devise</span><span class="delimiter">'</span></span>
+gem <span class="string"><span class="delimiter">'</span><span class="content">omniauth</span><span class="delimiter">'</span></span>
+gem <span class="string"><span class="delimiter">'</span><span class="content">omniauth-twitter</span><span class="delimiter">'</span></span>
+gem <span class="string"><span class="delimiter">'</span><span class="content">omniauth-facebook</span><span class="delimiter">'</span></span>
+gem <span class="string"><span class="delimiter">'</span><span class="content">omniauth-vkontakte</span><span class="delimiter">'</span></span>
+</pre></div>
+</div>
+</div>
+
+<h3 id="section-1">Генерируем миграции и модели</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre>rails generate <span class="key">devise</span>:install
+rails generate devise user
+rails g migration add_name_to_users <span class="key">name</span>:string
+rails g model identity <span class="key">user</span>:references <span class="key">provider</span>:string <span class="key">uid</span>:string
+
+<span class="comment"># Отредактируйте db/migrate/[timestamp]_add_devise_to_users.rb для установки Devise модулей, которые вы будете использовать.</span>
+<span class="comment"># Я обычно использую &quot;confirmable&quot; модуль, для регистраций через email.</span>
+</pre></div>
+</div>
+</div>
+
+<h3 id="appmodelsidentityrb">app/models/identity.rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Identity</span> &lt; <span class="constant">ActiveRecord</span>::<span class="constant">Base</span>
+  belongs_to <span class="symbol">:user</span>
+  validates_presence_of <span class="symbol">:uid</span>, <span class="symbol">:provider</span>
+  validates_uniqueness_of <span class="symbol">:uid</span>, <span class="symbol">:scope</span> =&gt; <span class="symbol">:provider</span>
+
+  <span class="keyword">def</span> <span class="predefined-constant">self</span>.<span class="function">find_for_oauth</span>(auth)
+    find_or_create_by(<span class="key">uid</span>: auth.uid, <span class="key">provider</span>: auth.provider)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+<h3 id="appconfiginitializersdeviserb">app/config/initializers/devise.rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre><span class="constant">Devise</span>.setup <span class="keyword">do</span> |config|
+...
+  config.omniauth <span class="symbol">:facebook</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">KEY</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">SECRET</span><span class="delimiter">&quot;</span></span>
+  config.omniauth <span class="symbol">:twitter</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">KEY</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">SECRET</span><span class="delimiter">&quot;</span></span>
+  config.omniauth <span class="symbol">:vkontakte</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">KEY</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">SECRET</span><span class="delimiter">&quot;</span></span>
+...
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+<h3 id="configenvironmentsenvironmentrb">config/environments/[environment].rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre>...
+  <span class="comment"># General Settings</span>
+  config.app_domain = <span class="string"><span class="delimiter">'</span><span class="content">somedomain.com</span><span class="delimiter">'</span></span>
+
+  <span class="comment"># Email</span>
+  config.action_mailer.delivery_method = <span class="symbol">:smtp</span>
+  config.action_mailer.perform_deliveries = <span class="predefined-constant">true</span>
+  config.action_mailer.default_url_options = { <span class="key">host</span>: config.app_domain }
+  config.action_mailer.smtp_settings = {
+    <span class="key">address</span>: <span class="string"><span class="delimiter">'</span><span class="content">smtp.gmail.com</span><span class="delimiter">'</span></span>, 
+    <span class="key">port</span>: <span class="string"><span class="delimiter">'</span><span class="content">587</span><span class="delimiter">'</span></span>,
+    <span class="key">enable_starttls_auto</span>: <span class="predefined-constant">true</span>,
+    <span class="key">user_name</span>: <span class="string"><span class="delimiter">'</span><span class="content">someuser</span><span class="delimiter">'</span></span>,
+    <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="content">somepass</span><span class="delimiter">'</span></span>,
+    <span class="key">authentication</span>: <span class="symbol">:plain</span>,
+    <span class="key">domain</span>: <span class="string"><span class="delimiter">'</span><span class="content">somedomain.com</span><span class="delimiter">'</span></span>
+  }
+...
+</pre></div>
+</div>
+</div>
+
+<h3 id="configroutesrb">config/routes.rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre>...
+  devise_for <span class="symbol">:users</span>, <span class="symbol">:controllers</span> =&gt; { <span class="key">omniauth_callbacks</span>: <span class="string"><span class="delimiter">'</span><span class="content">omniauth_callbacks</span><span class="delimiter">'</span></span> }
+...
+</pre></div>
+</div>
+</div>
+
+<h3 id="appcontrollersomniauthcallbackscontrollerrb">app/controllers/omniauth_callbacks_controller.rb</h3>
+<p>Стоит отметить, что единственный безопасный критерий соответствия пользователя с OAuth провайдером - это подтвержденный email адрес, но это приведет к созданию нескольких аккаунтов, если пользователь имеет разные email адреса для разных OAuth провайдеров. К примеру, пользователь зарегистрировался через facebook, затем позже попытался залогиниться через вконтакте, с которым связан другой email адрес, в таком случае система создаст новый аккаунт, потому что не найдет совпадений с уже существующим пользователем.</p>
+
+<p>Поэтому, что бы связать аккаунт с несколькими OAuth провайдерами, <code class="language-ruby"><span class="CodeRay">current_user</span></code> сессия должна уже быть установлена при возврате OAuth коллбэка, и передана через <code class="language-ruby"><span class="CodeRay"><span class="constant">User</span>.find_for_oauth</span></code>. Это может прозвучать сложно, однако что бы прикрепить еще один провайдер, скажем фейсбук, это to <code class="language-ruby"><span class="CodeRay">redirect_to user_omniauth_authorize_path(<span class="symbol">:facebook</span>)</span></code>, когда пользователь уже залогинен. </p>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">OmniauthCallbacksController</span> &lt; <span class="constant">Devise</span>::<span class="constant">OmniauthCallbacksController</span>
+  <span class="keyword">def</span> <span class="predefined-constant">self</span>.<span class="function">provides_callback_for</span>(provider)
+    class_eval <span class="string"><span class="delimiter">%Q{</span><span class="content">
+      def </span><span class="inline"><span class="inline-delimiter">#{</span>provider<span class="inline-delimiter">}</span></span><span class="content">
+        @user = User.find_for_oauth(env[&quot;omniauth.auth&quot;], current_user)
+
+        if @user.persisted?
+          sign_in_and_redirect @user, event: :authentication
+          set_flash_message(:notice, :success, kind: &quot;</span><span class="inline"><span class="inline-delimiter">#{</span>provider<span class="inline-delimiter">}</span></span><span class="content">&quot;.capitalize) if is_navigational_format?
+        else
+          session[&quot;devise.</span><span class="inline"><span class="inline-delimiter">#{</span>provider<span class="inline-delimiter">}</span></span><span class="content">_data&quot;] = env[&quot;omniauth.auth&quot;]
+          redirect_to new_user_registration_url
+        end
+      end
+    </span><span class="delimiter">}</span></span>
+  <span class="keyword">end</span>
+
+  [<span class="symbol">:twitter</span>, <span class="symbol">:facebook</span>, <span class="symbol">:vkontakte</span>].each <span class="keyword">do</span> |provider|
+    provides_callback_for provider
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">after_sign_in_path_for</span>(resource)
+    <span class="keyword">if</span> resource.email_verified?
+      <span class="keyword">super</span> resource
+    <span class="keyword">else</span>
+      finish_signup_path(resource)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+<h3 id="appmodelsuserrb">app/models/user.rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">User</span> &lt; <span class="constant">ActiveRecord</span>::<span class="constant">Base</span>
+  <span class="constant">TEMP_EMAIL_PREFIX</span> = <span class="string"><span class="delimiter">'</span><span class="content">change@me</span><span class="delimiter">'</span></span>
+  <span class="constant">TEMP_EMAIL_REGEX</span> = <span class="regexp"><span class="delimiter">/</span><span class="char">\A</span><span class="content">change@me</span><span class="delimiter">/</span></span>
+
+  <span class="comment"># Include default devise modules. Others available are:</span>
+  <span class="comment"># :lockable, :timeoutable</span>
+  devise <span class="symbol">:database_authenticatable</span>, <span class="symbol">:registerable</span>, <span class="symbol">:confirmable</span>,
+    <span class="symbol">:recoverable</span>, <span class="symbol">:rememberable</span>, <span class="symbol">:trackable</span>, <span class="symbol">:validatable</span>, <span class="symbol">:omniauthable</span>
+
+  validates_format_of <span class="symbol">:email</span>, <span class="symbol">:without</span> =&gt; <span class="constant">TEMP_EMAIL_REGEX</span>, <span class="key">on</span>: <span class="symbol">:update</span>
+
+  <span class="keyword">def</span> <span class="predefined-constant">self</span>.<span class="function">find_for_oauth</span>(auth, signed_in_resource = <span class="predefined-constant">nil</span>)
+
+    <span class="comment"># Получить identity пользователя, если он уже существует</span>
+    identity = <span class="constant">Identity</span>.find_for_oauth(auth)
+
+    <span class="comment"># Если signed_in_resource предоставлен оно всегда переписывает существующего пользователя</span>
+    <span class="comment"># что бы identity не была закрыта случайно созданным аккаунтом.</span>
+    <span class="comment"># Заметьте, что это может оставить зомби-аккаунты (без прикрепленной identity)</span>
+    <span class="comment"># которые позже могут быть удалены</span>
+    user = signed_in_resource ? signed_in_resource : identity.user
+
+    <span class="comment"># Создать пользователя, если нужно</span>
+    <span class="keyword">if</span> user.nil?
+
+      <span class="comment"># Получить email пользователя, если его предоставляет провайдер</span>
+      <span class="comment"># Если email не был предоставлен мы даем пользователю временный и просим</span>
+      <span class="comment"># пользователя установить и подтвердить новый в следующим шаге через UsersController.finish_signup</span>
+      email_is_verified = auth.info.email &amp;&amp; (auth.info.verified || auth.info.verified_email)
+      email = auth.info.email <span class="keyword">if</span> email_is_verified
+      user = <span class="constant">User</span>.where(<span class="symbol">:email</span> =&gt; email).first <span class="keyword">if</span> email
+
+      <span class="comment"># Создать пользователя, если это новая запись</span>
+      <span class="keyword">if</span> user.nil?
+        user = <span class="constant">User</span>.new(
+          <span class="key">name</span>: auth.extra.raw_info.name,
+          <span class="comment">#username: auth.info.nickname || auth.uid,</span>
+          <span class="key">email</span>: email ? email : <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">#{</span><span class="constant">TEMP_EMAIL_PREFIX</span><span class="inline-delimiter">}</span></span><span class="content">-</span><span class="inline"><span class="inline-delimiter">#{</span>auth.uid<span class="inline-delimiter">}</span></span><span class="content">-</span><span class="inline"><span class="inline-delimiter">#{</span>auth.provider<span class="inline-delimiter">}</span></span><span class="content">.com</span><span class="delimiter">&quot;</span></span>,
+          <span class="key">password</span>: <span class="constant">Devise</span>.friendly_token[<span class="integer">0</span>,<span class="integer">20</span>]
+        )
+        user.skip_confirmation!
+        user.save!
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="comment"># Связать identity с пользователем, если необходимо</span>
+    <span class="keyword">if</span> identity.user != user
+      identity.user = user
+      identity.save!
+    <span class="keyword">end</span>
+    user
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">email_verified?</span>
+    <span class="predefined-constant">self</span>.email &amp;&amp; <span class="predefined-constant">self</span>.email !~ <span class="constant">TEMP_EMAIL_REGEX</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-2">Завершение регистрации</h2>
+<p>Большинство OAuth провайдеров предоставляют нам всю необходимую информацию, но если пользователь зарегистрировался через твитер, или по какой-то иной причине OAuth провайдер не предоставил нам email, или вы просто хотите получить какую-то дополнительную информацию от пользователя, тогда нам надо добавить дополнительный шаг.</p>
+
+<h3 id="configroutesrb-1">config/routes.rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre>...
+  match <span class="string"><span class="delimiter">'</span><span class="content">/users/:id/finish_signup</span><span class="delimiter">'</span></span> =&gt; <span class="string"><span class="delimiter">'</span><span class="content">users#finish_signup</span><span class="delimiter">'</span></span>, <span class="key">via</span>: [<span class="symbol">:get</span>, <span class="symbol">:patch</span>], <span class="symbol">:as</span> =&gt; <span class="symbol">:finish_signup</span>
+...
+</pre></div>
+</div>
+</div>
+
+<h3 id="appcontrollersuserscontrollerrb">app/controllers/users_controller.rb</h3>
+<p>Если вы используете Devise confirmable модуль, для подтверждения email, тогда вы возможно захотите пропустить шаг валидации email, что бы не лишать пользователя всей радости регистрации через OAuth. Если вы все же хотите заставить пользователя подтвердить своей email адрес, тогда просто закомментируйте строчку <code class="language-ruby"><span class="CodeRay">current_user.skip_reconfirmation!</span></code></p>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">UsersController</span> &lt; <span class="constant">ApplicationController</span>
+  before_action <span class="symbol">:set_user</span>, <span class="key">only</span>: [<span class="symbol">:show</span>, <span class="symbol">:edit</span>, <span class="symbol">:update</span>, <span class="symbol">:destroy</span>]
+
+  ...
+
+  <span class="comment"># GET /users/:id.:format</span>
+  <span class="keyword">def</span> <span class="function">show</span>
+    <span class="comment"># authorize! :read, @user</span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># GET /users/:id/edit</span>
+  <span class="keyword">def</span> <span class="function">edit</span>
+    <span class="comment"># authorize! :update, @user</span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># PATCH/PUT /users/:id.:format</span>
+  <span class="keyword">def</span> <span class="function">update</span>
+    <span class="comment"># authorize! :update, @user</span>
+    respond_to <span class="keyword">do</span> |format|
+      <span class="keyword">if</span> <span class="instance-variable">@user</span>.update(user_params)
+        sign_in(<span class="instance-variable">@user</span> == current_user ? <span class="instance-variable">@user</span> : current_user, <span class="symbol">:bypass</span> =&gt; <span class="predefined-constant">true</span>)
+        format.html { redirect_to <span class="instance-variable">@user</span>, <span class="key">notice</span>: <span class="string"><span class="delimiter">'</span><span class="content">Your profile was successfully updated.</span><span class="delimiter">'</span></span> }
+        format.json { head <span class="symbol">:no_content</span> }
+      <span class="keyword">else</span>
+        format.html { render <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span> }
+        format.json { render <span class="key">json</span>: <span class="instance-variable">@user</span>.errors, <span class="key">status</span>: <span class="symbol">:unprocessable_entity</span> }
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># GET/PATCH /users/:id/finish_signup</span>
+  <span class="keyword">def</span> <span class="function">finish_signup</span>
+    <span class="comment"># authorize! :update, @user </span>
+    <span class="keyword">if</span> request.patch? &amp;&amp; params[<span class="symbol">:user</span>] <span class="comment">#&amp;&amp; params[:user][:email]</span>
+      <span class="keyword">if</span> <span class="instance-variable">@user</span>.update(user_params)
+        <span class="instance-variable">@user</span>.skip_reconfirmation!
+        sign_in(<span class="instance-variable">@user</span>, <span class="symbol">:bypass</span> =&gt; <span class="predefined-constant">true</span>)
+        redirect_to <span class="instance-variable">@user</span>, <span class="key">notice</span>: <span class="string"><span class="delimiter">'</span><span class="content">Your profile was successfully updated.</span><span class="delimiter">'</span></span>
+      <span class="keyword">else</span>
+        <span class="instance-variable">@show_errors</span> = <span class="predefined-constant">true</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># DELETE /users/:id.:format</span>
+  <span class="keyword">def</span> <span class="function">destroy</span>
+    <span class="comment"># authorize! :delete, @user</span>
+    <span class="instance-variable">@user</span>.destroy
+    respond_to <span class="keyword">do</span> |format|
+      format.html { redirect_to root_url }
+      format.json { head <span class="symbol">:no_content</span> }
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  
+  private
+    <span class="keyword">def</span> <span class="function">set_user</span>
+      <span class="instance-variable">@user</span> = <span class="constant">User</span>.find(params[<span class="symbol">:id</span>])
+    <span class="keyword">end</span>
+
+    <span class="keyword">def</span> <span class="function">user_params</span>
+      accessible = [ <span class="symbol">:name</span>, <span class="symbol">:email</span> ] <span class="comment"># extend with your own params</span>
+      accessible &lt;&lt; [ <span class="symbol">:password</span>, <span class="symbol">:password_confirmation</span> ] <span class="keyword">unless</span> params[<span class="symbol">:user</span>][<span class="symbol">:password</span>].blank?
+      params.require(<span class="symbol">:user</span>).permit(accessible)
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+<h3 id="appviewsusersfinishsignuphtmlerb">app/views/users/finish_signup.html.erb</h3>
+<p>В этой версии форма просит только email адрес пользователя, вы так же можете добавить и другие необходимые поля, и даже запросить пользователя указать пароль, в таком случае в будущем он сможет логиниться через email+пароль. Заметье, что шаблон ниже использует разметку бутстрапа.</p>
+
+<div><div class="CodeRay">
+  <div class="code"><pre>&lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">add-email</span><span class="delimiter">&quot;</span></span> <span class="keyword">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">container</span><span class="delimiter">&quot;</span></span>&gt;
+  &lt;h1&gt;<span class="constant">Add</span> <span class="constant">Email</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;
+  &lt;%= form_for(current_user, :as =&gt; 'user', :url =&gt; finish_signup_path(current_user), :html =&gt; { role: 'form'}) do |f| %&gt;
+    &lt;% if @show_errors &amp;&amp; current_user.errors.any? %&gt;
+      &lt;div id=&quot;error_explanation&quot;&gt;
+        &lt;% current_user.errors.full_messages.each do |msg| %&gt;
+          &lt;%= msg %&gt;&lt;br&gt;
+        &lt;% end %&gt;
+      &lt;</span><span class="delimiter">/</span></span>div&gt;
+    &lt;<span class="string"><span class="delimiter">% </span><span class="content">end</span><span class="delimiter"> </span></span>%&gt;
+    &lt;div <span class="keyword">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-group</span><span class="delimiter">&quot;</span></span>&gt;
+      &lt;<span class="string"><span class="delimiter">%=</span><span class="content"> f.label :email %&gt;
+      &lt;div class</span><span class="delimiter">=</span></span><span class="string"><span class="delimiter">&quot;</span><span class="content">controls</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="string"><span class="delimiter">%=</span><span class="content"> f.text_field :email, :autofocus </span><span class="delimiter">=</span></span>&gt; <span class="predefined-constant">true</span>, <span class="symbol">:value</span> =&gt; <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">class</span>: <span class="string"><span class="delimiter">'</span><span class="content">form-control input-lg</span><span class="delimiter">'</span></span>, <span class="key">placeholder</span>: <span class="string"><span class="delimiter">'</span><span class="content">Example: email@me.com</span><span class="delimiter">'</span></span> %&gt;
+        &lt;p <span class="keyword">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">help-block</span><span class="delimiter">&quot;</span></span>&gt;<span class="constant">Please</span> confirm your email address. No spam.&lt;/p&gt;
+      &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;
+    &lt;</span><span class="delimiter">/</span></span>div&gt;
+    &lt;div <span class="keyword">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">actions</span><span class="delimiter">&quot;</span></span>&gt;
+      &lt;<span class="string"><span class="delimiter">%=</span><span class="content"> f.submit 'Continue', :class </span><span class="delimiter">=</span></span>&gt; <span class="string"><span class="delimiter">'</span><span class="content">btn btn-primary</span><span class="delimiter">'</span></span> %&gt;
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;
+  &lt;% end %&gt;
+&lt;</span><span class="delimiter">/</span></span>div&gt;
+</pre></div>
+</div>
+</div>
+
+<h3 id="appcontrollersapplicationcontrollerrb">app/controllers/application_controller.rb</h3>
+<p>Следующий метод опциональный, но он полезен, если вы хотите убедиться, что пользователь предоставил всю необходимую информацию.</p>
+
+<p>Вы можете использовать его как <code class="language-ruby"><span class="CodeRay">before_filter</span></code>, следующим образом: <code class="language-ruby"><span class="CodeRay">before_filter <span class="symbol">:ensure_signup_complete</span>, <span class="key">only</span>: [<span class="symbol">:new</span>, <span class="symbol">:create</span>, <span class="symbol">:update</span>, <span class="symbol">:destroy</span>]</span></code></p>
+
+<div><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">ApplicationController</span> &lt; <span class="constant">ActionController</span>::<span class="constant">Base</span>
+
+  ...
+
+  <span class="keyword">def</span> <span class="function">ensure_signup_complete</span>
+    <span class="comment"># Убеждаемся, что цикл не бесконечный</span>
+    <span class="keyword">return</span> <span class="keyword">if</span> action_name == <span class="string"><span class="delimiter">'</span><span class="content">finish_signup</span><span class="delimiter">'</span></span>
+
+    <span class="comment"># Редирект на адрес 'finish_signup' если пользователь</span>
+    <span class="comment"># не подтвердил свою почту</span>
+    <span class="keyword">if</span> current_user &amp;&amp; !current_user.email_verified?
+      redirect_to finish_signup_path(current_user)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+<p>На этом все. Если я что-нибудь упустил, пожалуйста сообщите мне и я быстро поправлю.</p>
+
+<p>Данная статья является переводом. <a href="http://sourcey.com/rails-4-omniauth-using-devise-with-twitter-facebook-and-linkedin/">Оригинал</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Установка Ruby и Rails на Ubuntu]]></title>

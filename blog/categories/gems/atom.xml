@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: программирование | Alexander Timoshilov]]></title>
-  <link href="http://nearkun.github.io/blog/categories/proghrammirovaniie/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Gems | Alexander Timoshilov]]></title>
+  <link href="http://nearkun.github.io/blog/categories/gems/atom.xml" rel="self"/>
   <link href="http://nearkun.github.io/"/>
   <updated>2014-08-14T23:09:04+03:00</updated>
   <id>http://nearkun.github.io/</id>
@@ -353,74 +353,6 @@ rails g model identity <span class="key">user</span>:references <span class="key
 <p>На этом все. Если я что-нибудь упустил, пожалуйста сообщите мне и я быстро поправлю.</p>
 
 <p>Данная статья является переводом. <a href="http://sourcey.com/rails-4-omniauth-using-devise-with-twitter-facebook-and-linkedin/">Оригинал</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Установка Ruby и Rails на Ubuntu]]></title>
-    <link href="http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/"/>
-    <updated>2014-08-12T01:58:29+03:00</updated>
-    <id>http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu</id>
-    <content type="html"><![CDATA[<p>Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту.</p>
-
-<!-- more -->
-
-<p>Присаживайтесь поудобнее, процесс установки займет какое-то время.</p>
-
-<h2 id="ruby">1) Установка Ruby</h2>
-
-<pre><code>sudo apt-get update
-sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev
-libreadline-dev
- libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev
-python-software-properties
-
-cd
-git clone git://github.com/sstephenson/rbenv.git .rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' &gt;&gt; ~/.bashrc
-echo 'eval "$(rbenv init -)"' &gt;&gt; ~/.bashrc
-exec $SHELL
-
-git clone git://github.com/sstephenson/ruby-build.git
-~/.rbenv/plugins/ruby-build
-echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' &gt;&gt; ~/.bashrc
-exec $SHELL
-
-rbenv install 2.1.2
-rbenv global 2.1.2
-ruby -v
-
-echo "gem: --no-ri --no-rdoc" &gt; ~/.gemrc
-</code></pre>
-
-<h2 id="rails">2) Установка Rails</h2>
-
-<pre><code>sudo apt-get install nodejs
-
-gem install rails
-rbenv rehash
-rails -v
-gem install bundler
-</code></pre>
-
-<h2 id="rails-">3) Запуск Rails приложение</h2>
-<p>Теперь, когда ruby и rails установлены, мы можем проверить их работоспособность, создав и запустив приложение.</p>
-
-<pre><code>rails new_app
-cd new_app
-rails server
-</code></pre>
-
-<h2 id="postgres-">4) Установка Postgres (Опционально)</h2>
-
-<pre><code>sudo apt-get install postgresql libpq-dev
-sudo su - postgres
-createuser [me]
-createdb -O [me] [название_дб]_development
-createdb -O [me] [название_дб]_test
-exit
-</code></pre>
-
 ]]></content>
   </entry>
   

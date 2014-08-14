@@ -1,24 +1,100 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: программирование | Alexander Timoshilov]]></title>
-  <link href="http://nearkun.github.io/blog/categories/proghrammirovaniie/atom.xml" rel="self"/>
-  <link href="http://nearkun.github.io/"/>
-  <updated>2014-08-14T23:09:04+03:00</updated>
-  <id>http://nearkun.github.io/</id>
-  <author>
-    <name><![CDATA[Near]]></name>
-    
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Аутентификация через Twitter, Facebook, ВКонтакте, исользуя Devise и OmniAuth в Rails 4 - Alexander Timoshilov</title>
+  <meta name="author" content="Near">
 
   
-  <entry>
-    <title type="html"><![CDATA[Аутентификация через Twitter, Facebook, ВКонтакте, исользуя Devise и OmniAuth в Rails 4]]></title>
-    <link href="http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/"/>
-    <updated>2014-08-14T17:43:42+03:00</updated>
-    <id>http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte</id>
-    <content type="html"><![CDATA[<p>Существует довольно много OAuth решений, но я хочу поделиться тем, что использую лично, так как оно позволяет грамотно связать несколько провайдеров(twitter, fb и тд) с одним пользователем. <!-- more --> Если вы пользуетесь готовыми решениями с интернета, вы обнаружите, что каждый раз, когда пользователь логинится с другого OAuth провайдера, создается новый аккаунт, что приводит в замешательство.
+  <meta name="description" content="Существует довольно много OAuth решений, но я хочу поделиться тем, что использую лично, так как оно позволяет грамотно связать несколько провайдеров( &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Alexander Timoshilov" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Alexander Timoshilov</a></h1>
+  
+    <h2>Ruby on Rails developer</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nearkun.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Аутентификация через Twitter, Facebook, ВКонтакте, исользуя Devise и OmniAuth в Rails 4</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-14T17:43:42+03:00" pubdate data-updated="true">Aug 14<sup>th</sup>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://nearkun.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Существует довольно много OAuth решений, но я хочу поделиться тем, что использую лично, так как оно позволяет грамотно связать несколько провайдеров(twitter, fb и тд) с одним пользователем. <!-- more --> Если вы пользуетесь готовыми решениями с интернета, вы обнаружите, что каждый раз, когда пользователь логинится с другого OAuth провайдера, создается новый аккаунт, что приводит в замешательство.
 Так же некоторые провайдеры не делятся email адресом пользователя, поэтому нам придется добавить дополнительный шаг в регистрацию, подробнее об этом <a href="#section-2">здесь</a>.</p>
 
 <h2 id="section">Начальная реализация</h2>
@@ -353,75 +429,176 @@ rails g model identity <span class="key">user</span>:references <span class="key
 <p>На этом все. Если я что-нибудь упустил, пожалуйста сообщите мне и я быстро поправлю.</p>
 
 <p>Данная статья является переводом. <a href="http://sourcey.com/rails-4-omniauth-using-devise-with-twitter-facebook-and-linkedin/">Оригинал</a></p>
-]]></content>
-  </entry>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
   
-  <entry>
-    <title type="html"><![CDATA[Установка Ruby и Rails на Ubuntu]]></title>
-    <link href="http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/"/>
-    <updated>2014-08-12T01:58:29+03:00</updated>
-    <id>http://nearkun.github.io/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu</id>
-    <content type="html"><![CDATA[<p>Мой первый пост в этом блоге я посвящу самым азам. В этом гайде будет описана установка руби и рельс на убунту.</p>
 
-<!-- more -->
+<span class="byline author vcard">Posted by <span class="fn">Near</span></span>
 
-<p>Присаживайтесь поудобнее, процесс установки займет какое-то время.</p>
+      
 
-<h2 id="ruby">1) Установка Ruby</h2>
 
-<pre><code>sudo apt-get update
-sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev
-libreadline-dev
- libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev
-python-software-properties
 
-cd
-git clone git://github.com/sstephenson/rbenv.git .rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' &gt;&gt; ~/.bashrc
-echo 'eval "$(rbenv init -)"' &gt;&gt; ~/.bashrc
-exec $SHELL
 
-git clone git://github.com/sstephenson/ruby-build.git
-~/.rbenv/plugins/ruby-build
-echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' &gt;&gt; ~/.bashrc
-exec $SHELL
 
-rbenv install 2.1.2
-rbenv global 2.1.2
-ruby -v
 
-echo "gem: --no-ri --no-rdoc" &gt; ~/.gemrc
-</code></pre>
 
-<h2 id="rails">2) Установка Rails</h2>
 
-<pre><code>sudo apt-get install nodejs
-
-gem install rails
-rbenv rehash
-rails -v
-gem install bundler
-</code></pre>
-
-<h2 id="rails-">3) Запуск Rails приложение</h2>
-<p>Теперь, когда ruby и rails установлены, мы можем проверить их работоспособность, создав и запустив приложение.</p>
-
-<pre><code>rails new_app
-cd new_app
-rails server
-</code></pre>
-
-<h2 id="postgres-">4) Установка Postgres (Опционально)</h2>
-
-<pre><code>sudo apt-get install postgresql libpq-dev
-sudo su - postgres
-createuser [me]
-createdb -O [me] [название_дб]_development
-createdb -O [me] [название_дб]_test
-exit
-</code></pre>
-
-]]></content>
-  </entry>
   
-</feed>
+
+
+<time datetime="2014-08-14T17:43:42+03:00" pubdate data-updated="true">Aug 14<sup>th</sup>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/gems/'>gems</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/proghrammirovaniie/'>программирование</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/" data-via="hotsaucew" data-counturl="http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/" title="Previous Post: Установка Ruby и Rails на Ubuntu">&laquo; Установка Ruby и Rails на Ubuntu</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/">Аутентификация через Twitter, Facebook, ВКонтакте, исользуя Devise и OmniAuth в Rails 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/12/ustanovka-ruby-i-rails-na-ubuntu/">Установка Ruby и Rails на Ubuntu</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/nearkun">@nearkun</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'nearkun',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Near -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'nearkun';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/';
+        var disqus_url = 'http://nearkun.github.io/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
