@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ubuntu | Alexander Timoshilov]]></title>
   <link href="http://nearkun.github.io/blog/categories/ubuntu/atom.xml" rel="self"/>
   <link href="http://nearkun.github.io/"/>
-  <updated>2014-08-27T23:54:09+03:00</updated>
+  <updated>2014-09-23T23:47:15+03:00</updated>
   <id>http://nearkun.github.io/</id>
   <author>
     <name><![CDATA[Near]]></name>
@@ -40,8 +40,7 @@ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' &gt;&gt; ~/.bashrc
 echo 'eval "$(rbenv init -)"' &gt;&gt; ~/.bashrc
 exec $SHELL
 
-git clone git://github.com/sstephenson/ruby-build.git
-~/.rbenv/plugins/ruby-build
+git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' &gt;&gt; ~/.bashrc
 exec $SHELL
 
