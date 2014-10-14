@@ -4,7 +4,7 @@
   <title><![CDATA[Category: программирование | Alexander Timoshilov]]></title>
   <link href="http://nearkun.github.io/blog/categories/proghrammirovaniie/atom.xml" rel="self"/>
   <link href="http://nearkun.github.io/"/>
-  <updated>2014-09-23T23:47:15+03:00</updated>
+  <updated>2014-10-14T12:28:51+03:00</updated>
   <id>http://nearkun.github.io/</id>
   <author>
     <name><![CDATA[Near]]></name>
@@ -12,6 +12,26 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Skip before_filter for devise controller]]></title>
+    <link href="http://nearkun.github.io/blog/2014/10/14/skip-before-filter-for-devise-controller/"/>
+    <updated>2014-10-14T12:19:21+03:00</updated>
+    <id>http://nearkun.github.io/blog/2014/10/14/skip-before-filter-for-devise-controller</id>
+    <content type="html"><![CDATA[<p>Sometimes you just need to skip any before_filter for whole controller,
+but you don’t want to override it (or actually it just didn’t work for
+me), you could to this way:</p>
+
+<h3 id="applicationrb">application.rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre>config.to_prepare <span class="keyword">do</span>
+  <span class="constant">Devise</span>::<span class="constant">DeviseControllerName</span>.skip_before_filter <span class="symbol">:callback_name</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Аутентификация через Twitter, Facebook, ВКонтакте, используя Devise и OmniAuth в Rails 4]]></title>

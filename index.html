@@ -9,7 +9,9 @@
   <meta name="author" content="Near">
 
   
-  <meta name="description" content="Существует довольно много OAuth решений, но я хочу поделиться тем, что использую лично, так как оно позволяет грамотно связать несколько провайдеров( &hellip;">
+  <meta name="description" content="Sometimes you just need to skip any before_filter for whole controller,
+but you don’t want to override it (or actually it just didn’t work for
+me), &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +67,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/14/skip-before-filter-for-devise-controller/">Skip before_filter for devise controller</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-14T12:19:21+03:00" pubdate data-updated="true">Oct 14<sup>th</sup>, 2014</time>
+        
+           | <a href="/blog/2014/10/14/skip-before-filter-for-devise-controller/#disqus_thread"
+             data-disqus-identifier="http://nearkun.github.io/blog/2014/10/14/skip-before-filter-for-devise-controller/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sometimes you just need to skip any before_filter for whole controller,
+but you don’t want to override it (or actually it just didn’t work for
+me), you could to this way:</p>
+
+<h3 id="applicationrb">application.rb</h3>
+<div><div class="CodeRay">
+  <div class="code"><pre>config.to_prepare <span class="keyword">do</span>
+  <span class="constant">Devise</span>::<span class="constant">DeviseControllerName</span>.skip_before_filter <span class="symbol">:callback_name</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -163,6 +215,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/skip-before-filter-for-devise-controller/">Skip before_filter for devise controller</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/14/authentifikacia-cherez-devise-omniauth-twitter-facebook-vkontakte/">Аутентификация через Twitter, Facebook, ВКонтакте, используя Devise и OmniAuth в Rails 4</a>
